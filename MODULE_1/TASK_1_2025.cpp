@@ -21,6 +21,8 @@
  * r - value of n mod k - num of b
  * nta - num of a
  */
+
+/* FIRST VERSION:
 int main()
 {
     int t, n, k, a, b, r, nta;
@@ -37,3 +39,24 @@ int main()
 
     return 0;
 }
+ */
+
+int sum(int k)
+{
+    return k*(k-1)/2;
+}
+
+int main()
+{
+    int t, n, k, a;
+    scanf("%d", &t);
+    for(int j = 0; j < t; j++)
+    {
+        scanf("%d %d", &n, &k);
+        a = n / k;
+        printf("%d\n", sum(n % k)*(a + 1)*(a + 1) + sum(k - (n % k))*a*a + (k - (n % k))*(n % k)*a*(a + 1));
+    }
+
+    return 0;
+}
+
