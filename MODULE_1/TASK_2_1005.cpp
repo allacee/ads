@@ -1,48 +1,35 @@
 #include <stdio.h>
+#include <cstdint>
+//size equals n
+//rocks[i] equals w_i
 
-/*
- * У вас есть несколько камней известного веса w1, …, wn.
- * Напишите программу, которая распределит камни в две кучи так,
- * что разность весов этих двух куч будет минимальной.
- * Исходные данные
- * Ввод содержит количество камней n (1 ≤ n ≤ 20) и веса камней w1, …, wn (1 ≤ wi ≤ 100 000) — целые, разделённые пробельными символами.
- * Результат
- * Ваша программа должна вывести одно число — минимальную разность весов двух куч.
- */
+using namespace std;
 
-//fail on 5 2 3 2 3 2
-//THIS ON FAILS!
+static uint32_t min_diff = 100000;
+static uint8_t size;
+static uint32_t * rocks;
+
+void find_min_diff( uint32_t sum_heap1 = 0, uint32_t sum_heap2 = 0, uint8_t i = 0 )
+{
+    if (i != size)
+    {
+        find_min_diff(sum_heap1 + rocks[i], sum_heap2, i + 1);
+        find_min_diff(sum_heap1, sum_heap2 + rocks[i], i + 1);
+    }
+    else
+        min_diff = min_diff < sum_heap1 - sum_heap2 ? min_diff : sum_heap1 - sum_heap2;
+}
+
 int main()
 {
-    int num;
 
-    scanf("%d", &num);
-    int arr[num], s1 = 0, s2 = 0, max = 0, maxid;
+    scanf("%hhu", &size);
+    rocks = new uint32_t[size];
+    for (uint8_t i = 0; i < size; i++)
+        scanf("%u", &rocks[i]);
 
-    for (int i = 0; i < num; i++)
-        scanf("%d", &arr[i]);
-
-    for (int i = 0; i < num; i++)
-    {
-        for(int j = 0; j < num; j++)
-        {
-            if ( arr[j] > max )
-            {
-                max = arr[j];
-                maxid = j;
-            }
-        }
-
-        if (s1 > s2)
-            s2 += max;
-        else s1 += max;
-
-        arr[maxid] = 0;
-        max = 0;
-    }
-
-    printf("first : %d, second: %d\n", s1, s2);
-    printf("%d", s1 > s2? s1-s2 : s2-s1);
+    find_min_diff();
+    printf("%d\n", min_diff);
 
     return 0;
 }

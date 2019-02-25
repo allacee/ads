@@ -1,5 +1,3 @@
-#include "stdio.h"
-
 /*
  * Команд - от 2 до k
  * Бойцов - n, каждый боец ровно в одной команде
@@ -11,50 +9,22 @@
  * Выход: количество схваток
  */
 
-
-/*
- * t - num of tests
- * n - num of fighters
- * k - num of teams
- * a - value of n div k
- * b = a + 1
- * r - value of n mod k - num of b
- * nta - num of a
- */
-
-/* FIRST VERSION:
-int main()
-{
-    int t, n, k, a, b, r, nta;
-    scanf("%d", &t);
-    for(int j = 0; j < t; j++)
-    {
-        scanf("%d %d", &n, &k);
-        a = n / k;
-        b = a + 1;
-        r = n % k;
-        nta = k - r;
-        printf("%d\n", r*(r-1)/2*b*b + nta*(nta-1)/2*a*a + nta*r*a*b);
-    }
-
-    return 0;
-}
- */
-
-int sum(int k)
-{
-    return k*(k-1)/2;
-}
+#include "stdio.h"
+#include <cstdint>
 
 int main()
 {
-    int t, n, k, a;
-    scanf("%d", &t);
-    for(int j = 0; j < t; j++)
+    uint8_t t;
+    uint16_t n, k, div, mod;
+    scanf("%hhu", &t);
+    for(uint8_t j = 0; j < t; j++)
     {
-        scanf("%d %d", &n, &k);
-        a = n / k;
-        printf("%d\n", sum(n % k)*(a + 1)*(a + 1) + sum(k - (n % k))*a*a + (k - (n % k))*(n % k)*a*(a + 1));
+        scanf("%hu %hu", &n, &k);
+        div = n / k;
+        mod = n % k;
+        printf("%d\n", mod * (mod - 1) / 2  * ( (div + 1) * (div + 1) )
+        + (k - mod - 1) * (k - mod) / 2     * ( div * div )
+        + (k - mod) * mod                   * ( div * div + 1 ) );
     }
 
     return 0;
