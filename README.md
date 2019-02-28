@@ -1,8 +1,4 @@
 # Algorithms and data structers course
-This repo was created to store and share my solutions for tasks of ;algorithms and data structures' course of IMTO University.
+This repo was created to store and share my solutions for tasks of 'algorithms and data structures' course in IMTO University.
 
 Original tasks can be found on acm.timus.ru
-
-Maybe I'll use this repo store solutions for other tasks from timus :)
-
-<b> In this programs I had to use C++14 and C11 <b>
