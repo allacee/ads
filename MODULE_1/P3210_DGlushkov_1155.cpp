@@ -2,6 +2,7 @@
 #include <cstdint>
 
 static uint16_t num_of_iterations = 0;
+
 void iterate(uint8_t * first, uint8_t * second, char first_char, char second_char,  char operation)
 {
 
@@ -24,7 +25,6 @@ int main()
 {
 
     uint8_t A, B, C, D, E, F, G, H;
-    //reading in needed order
     scanf("%hhu %hhu %hhu %hhu %hhu %hhu %hhu %hhu", &A, &B, &C, &D, &E, &F, &G, &H);
 
     if ( (A + H + F + C ) != (E + B + D + G) )
@@ -104,8 +104,8 @@ int main()
 
 /*
  * array version
- *
- *
+ * NOT FINISHED
+
 #include <stdio.h>
 #include <cstdint>
 
@@ -120,15 +120,15 @@ void iterate(uint8_t first_id, uint8_t second_id, char operation)
     if (operation == '-')
     {
         val[first_id]--;
-        (* second)--;
+        val[second_id]--;
     }
     else
     {
-        (* first)++;
-        (* second)++;
+        val[first_id]++;
+        val[second_id]++;
     }
 
-    printf("%c%c%c\n", first_char, second_char, operation);
+    printf("%c%c%c\n", first_id + 65, second_id + 65, operation);
     num_of_iterations++;
 }
 
@@ -169,4 +169,4 @@ int main()
 
     return 0;
 }
- * */
+ */
