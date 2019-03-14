@@ -89,34 +89,34 @@ void solve(int ** matrix, int side_size, coord_t start, coord_t point)
     if(point.raw >= new_side_size && point.col >= new_side_size)
     {
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col + new_side_size}, {point.raw - new_side_size, point.col - new_side_size});
-        create_figure(matrix, start, new_side_size, 1);
         solve(matrix, new_side_size, {start.raw, start.col + new_side_size}, {new_side_size - 1, 0});
         solve(matrix, new_side_size, start, {new_side_size - 1, new_side_size - 1});
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col}, {0, new_side_size - 1});
+        create_figure(matrix, start, new_side_size, 1);
     }
     else if(point.raw < new_side_size && point.col < new_side_size)
     {
         solve(matrix, new_side_size, start, point);
-        create_figure(matrix, start, new_side_size, 2);
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col + new_side_size}, {0, 0});
         solve(matrix, new_side_size, {start.raw, start.col + new_side_size}, {new_side_size - 1, 0});
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col}, {0, new_side_size - 1});
+        create_figure(matrix, start, new_side_size, 2);
     }
     else if(point.raw < new_side_size && point.col >= new_side_size)
     {
         solve(matrix, new_side_size, {start.raw, start.col + new_side_size}, {point.raw, point.col - new_side_size});
-        create_figure(matrix, start, new_side_size, 3);
         solve(matrix, new_side_size, start, {new_side_size - 1, new_side_size - 1});
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col + new_side_size}, {0, 0});
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col}, {0, new_side_size - 1});
+        create_figure(matrix, start, new_side_size, 3);
     }
     else
     {
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col}, {point.raw - new_side_size, point.col});
-        create_figure(matrix, start, new_side_size, 4);
         solve(matrix, new_side_size, start, {new_side_size - 1, new_side_size - 1});
         solve(matrix, new_side_size, {start.raw + new_side_size, start.col + new_side_size}, {0, 0});
         solve(matrix, new_side_size, {start.raw, start.col + new_side_size}, {new_side_size - 1, 0});
+        create_figure(matrix, start, new_side_size, 4);
     }
 
 }
