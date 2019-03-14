@@ -19,6 +19,7 @@ int main()
             max_sum = sum;
     }
 
+    delete[] array;
     printf("%d", max_sum);
     return  0;
 }
