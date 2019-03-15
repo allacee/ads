@@ -10,7 +10,7 @@ typedef struct{
     double ctg;
 } point_t;
 
-static const int SORT_RUN = 32;
+static int SORT_RUN = 32;
 
 void set_ctg(point_t * points, int N, int chosen_id)
 {
@@ -117,7 +117,7 @@ int main() {
         scanf("%d %d", &points[i].x, &points[i].y);
         points[i].id = i;
 
-        if (points[i].x == minX && minY < points[i].y || points[i].x < minX)
+        if (( points[i].x == minX && points[i].y < minY ) || points[i].x < minX)
         {
             minX = points[i].x;
             minY = points[i].y;
