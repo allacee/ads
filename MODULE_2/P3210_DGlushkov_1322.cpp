@@ -8,7 +8,7 @@ using namespace std;
 const unsigned char SYM_ARR_SIZE = 127;
 static string first_sym;
 
-bool init_sym_pairs(uint32_t a, uint32_t b)
+bool cmp_sym_pairs(uint32_t a, uint32_t b)
 {
     return first_sym[a] != first_sym [b] ? first_sym[a] < first_sym[b] : a < b ;
 }
@@ -44,7 +44,7 @@ int main()
     for(uint32_t i = 0; i < first_sym.length(); i++)
         sym_pairs.push_back(i);
 
-    sort(sym_pairs.begin(), sym_pairs.end(), init_sym_pairs);
+    sort(sym_pairs.begin(), sym_pairs.end(), cmp_sym_pairs);
 
 
     for(uint32_t i = 0; i < first_sym.length(); i++)
