@@ -21,9 +21,6 @@ public:
         value = 0;
     }
 
-    Letter(char let, size_t id) : value(let), id(id)
-    {}
-
     char getValue() const
     {
         return value;
@@ -52,52 +49,61 @@ int main()
     char prev_sym = 0;
     int counter;
     uint32_t in_id;
-    size_t sting_size;
-    string in_string;
+    size_t string_size;
+    char in_string[100000];
     Letter * last_letters, * first_letters;
     char * result;
 
     size_t symbols[255];
 
+    for (size_t i = 0; i < 100000; i++)
+        in_string[i] = 0;
+
     for (size_t i = 0; i < 255; i++)
         symbols[i]=0;
 
-    cin >> in_id >> in_string;
+    cin >> in_id;
+    scanf("%s", in_string);
     in_id--;
-    sting_size = in_string.size();
 
-    first_letters = new Letter[sting_size];
-    last_letters = new Letter[sting_size];
-    result = new char[sting_size];
+    for(string_size = 0; string_size < 100000; string_size++)
+        if (in_string[string_size] == '\0')
+        {
+            break;
+        }
 
-    counter = -1;
-    for (size_t i = 0; i < sting_size; i++)
+    first_letters = new Letter[string_size];
+    last_letters = new Letter[string_size];
+    result = new char[string_size];
+
+
+    for (size_t i = 0; i < string_size; i++)
     {
         last_letters[i].setValue(in_string[i]);
         last_letters[i].setId(symbols[in_string[i]]++);
     }
 
-    sort(in_string.begin(), in_string.end());
+    sort(in_string, in_string + string_size);
 
     counter = -1;
     prev_sym = in_string[0];
-    for (size_t i = 0; i < sting_size; i++)
+    for (size_t i = 0; i < string_size; i++)
     {
         first_letters[i].setValue(in_string[i]);
 
         if (prev_sym == in_string[i])
-            first_letters[i].setId(++counter);
+            first_letters[i].setId(static_cast<size_t>(++counter));
         else
         {
             prev_sym = in_string[i];
             counter = 0;
-            first_letters[i].setId(counter);
+            first_letters[i].setId(static_cast<size_t>(counter));
         }
     }
 
 
 
-  /*  for (size_t i = 0; i < sting_size; i++)
+  /*  for (size_t i = 0; i < string_size; i++)
     {
         cout << last_letters[i].getValue() << last_letters[i].getId() << " ";
     }
@@ -106,7 +112,7 @@ int main()
 
 /*    cout << endl;
 
-    for (size_t i = 0; i < sting_size; i++)
+    for (size_t i = 0; i < string_size; i++)
     {
         cout << first_letters[i].getValue() << first_letters[i].getId() << " ";
     }
@@ -115,22 +121,19 @@ int main()
 
 
     result[0] = first_letters[in_id].getValue();
-    result[sting_size - 1] = last_letters[in_id].getValue();
-    result[sting_size] = 0;
+    result[string_size - 1] = last_letters[in_id].getValue();
+    result[string_size] = 0;
 
     char next_letter = first_letters[in_id].getValue();
     size_t cur_id = first_letters[in_id].getId();
-
-    Letter temp = first_letters[in_id];
-
 //    cout << next_letter << cur_id << endl;
 
 
 
-    for (size_t i = 1; i < sting_size - 1; i++)
+    for (size_t i = 1; i < string_size - 1; i++)
     {
 
-        for (size_t j = 0; j < sting_size ; j++)
+        for (size_t j = 0; j < string_size ; j++)
         {
 
             if (cur_id == last_letters[j].getId() && next_letter == last_letters[j].getValue())
