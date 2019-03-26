@@ -1,4 +1,4 @@
-//this solution works fine but it's kinda slow. Use the one without OLD in its name. Thanks for idea for optimization to Viktor Khrulev - github.com/Demevag
+//this solution works fine but it's kinda slow. Use the one without OLD in its name. Thanks for idea of optimization to Viktor Khrulev - github.com/Demevag
 
 #include <iostream>
 #include <algorithm>
