@@ -1,71 +1,58 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
-const int SYM_ARR_SIZE = 127;
-
-typedef struct {
-    char sym;
-    int id;
-} pair_t;
-
+#include <stdint.h>
 
 using namespace std;
 
-bool pair_check_less(pair_t const &a, pair_t const &b)
+const unsigned char SYM_ARR_SIZE = 127;
+static string first_sym;
+
+bool init_sym_pairs(uint32_t a, uint32_t b)
 {
-    if (a.sym < b.sym)
-        return true;
-    else if (a.sym > b.sym)
-        return false;
-    else
-        return a.id < b.id;
+    return first_sym[a] != first_sym [b] ? first_sym[a] < first_sym[b] : a < b ;
 }
 
 int main()
 {
-    vector<pair_t> first_sym, second_sym;
-    int src_str_id, str_size;
-    char input_letter, * result;
-    int first_sym_counter[SYM_ARR_SIZE];
+    uint32_t cur_index, sym_counter[SYM_ARR_SIZE] = {0};
+    vector<uint32_t> sym_pairs;
+    string second_sym, result;
+    char input_sym;
 
-    for (int i = 0; i < SYM_ARR_SIZE; i++)
-        first_sym_counter[i] = 0;
+    cin >> cur_index;
+    cur_index--;
 
-    scanf("%d", &src_str_id);
-    src_str_id--;
-
-    //skip spaces
     do
-        scanf("%c", &input_letter);
-    while ((input_letter < 'A' || input_letter > 'Z') && (input_letter < 'a' || input_letter > 'z') && input_letter !='_');
+        scanf("%c", &input_sym);
+    while ((input_sym < 'A' || input_sym > 'Z') && (input_sym < 'a' || input_sym > 'z') && input_sym !='_');
 
     do
     {
-        first_sym.insert( first_sym.end(), {input_letter, first_sym_counter[input_letter]++} );
-        scanf("%c", &input_letter);
+        first_sym += input_sym;
+        sym_counter[input_sym]++;
+        scanf("%c", &input_sym);
     }
-    while ((input_letter >= 'A' && input_letter <= 'Z') || (input_letter >= 'a' && input_letter <= 'z') || input_letter =='_');
+    while ((input_sym >= 'A' && input_sym <= 'Z') || (input_sym >= 'a' && input_sym <= 'z') || input_sym =='_');
 
-    str_size = static_cast<int>(first_sym.size());
     for (char i = 0; i < SYM_ARR_SIZE; i++)
-        if (first_sym_counter[i] > 0)
-            for(int j = 0; j < first_sym_counter[i]; j++)
-                second_sym.insert(second_sym.end(), { i, j} );
-
-    result = new char[str_size+1];
-    result[str_size] = '\0';
+        if (sym_counter[i] > 0)
+            for(uint32_t j = 0; j < sym_counter[i]; j++)
+                second_sym += i;
 
 
-    vector<pair_t>::iterator cur_sym_iter;
-    for(int i = str_size - 1; i > -1; i--)
+    for(uint32_t i = 0; i < first_sym.length(); i++)
+        sym_pairs.push_back(i);
+
+    sort(sym_pairs.begin(), sym_pairs.end(), init_sym_pairs);
+
+
+    for(uint32_t i = 0; i < first_sym.length(); i++)
     {
-        cur_sym_iter = lower_bound(second_sym.begin(), second_sym.end(), first_sym[src_str_id], pair_check_less);
-        result[i] = cur_sym_iter.operator*().sym;
-        src_str_id = static_cast<int>(cur_sym_iter - second_sym.begin());
+        result += second_sym[cur_index];
+        cur_index = sym_pairs[cur_index];
     }
 
-    printf("%s", result);
-    delete[] result;
+    cout << result;
     return 0;
 }
