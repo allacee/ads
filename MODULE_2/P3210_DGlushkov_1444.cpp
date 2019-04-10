@@ -1,3 +1,16 @@
+// input: N - (3 <= N <= 30_000) num of pumpkins
+// input: N { x_i, y_i } (-1000 <= x_i, y_i <= 1000) - coordinates of pumpkins
+//
+// output: N' - num of eaten pumpkins
+// output: N' { i } - id of eaten pumpkin
+//
+// first pumpkin's number is 1
+// N' probably always equals N
+
+// РЅР°С…РѕРґРёРј СѓРіРѕР» РјРµР¶РґСѓ С‚РѕС‡РєР°РјРё Рё РЅРёР¶РЅРµР№ Р»РµРІРѕР№ С‚РѕС‡РєРѕР№
+// РёСЃРєР»СЋС‡РµРЅРёРµ - РёСЃС…РѕРґРЅР°СЏ С‚РѕС‡РєР° Р»РµР¶РёС‚ РЅР° РєСЂР°СЋ - РјР°РєСЃ РёР»Рё РјРёРЅ
+// min max coord РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РїСЂРѕРІРµСЂРёС‚СЊ, СЏРІР»СЏРµС‚СЃСЏ Р»Рё С‚РѕС‡РєР° РєСЂР°Р№РЅРµР№
+
 #include <iostream>
 #include <cstdint>
 #include <vector>
