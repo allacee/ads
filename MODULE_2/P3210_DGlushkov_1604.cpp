@@ -9,7 +9,7 @@ struct sign_t
     uint32_t id, num;
     bool operator< (const sign_t &b)
     {
-        return (num != b.num) ? num < b.num : id <b.id;
+        return (num != b.num) ? num < b.num : id < b.id;
     }
 };
 
