@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+#include <list>
 
 using namespace std;
 
@@ -26,6 +27,5 @@ int main()
 
     delete[] x;
     delete[] y;
-    
     return 0;
 }

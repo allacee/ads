@@ -20,6 +20,8 @@ int main()
     string second_sym, result;
     char input_sym;
 
+
+
     cin >> cur_index;
     cur_index--;
 
