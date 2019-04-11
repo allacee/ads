@@ -1,87 +1,63 @@
 #include <iostream>
-#include <cstdint>
+#include <vector>
 #include <algorithm>
 
 using namespace std;
 
-struct sym_t
+struct sign_t
 {
     uint32_t id, num;
-
-    static bool cmp(const sym_t &a, const sym_t &b)
+    bool operator< (const sign_t &b)
     {
-        if (a.num != b.num)
-            return a.num > b.num;
-
-        else
-            return a.id > b.id;
+        return (num != b.num) ? num < b.num : id <b.id;
     }
-
-
 };
+
+pair<size_t, size_t> find_two_maxes(vector<sign_t> & signs)
+{
+    uint32_t first = 0, second = 0;
+    for (size_t i = 0; i < signs.size(); i++)
+        if (signs[i].num >= signs[first].num)
+        {
+            second = first;
+            first = i;
+        }
+    return {first, second};
+}
+
 
 int main()
 {
-    size_t k;
-    uint32_t last_id = 0, sum = 0;
-    sym_t * n;
+    size_t k, sum = 0;
+    vector<sign_t> signs;
+    pair<size_t, size_t> maxes = {0, 1};
+
     cin >> k;
-    n = new sym_t[k];
+    signs = vector<sign_t>(k);
 
     for (size_t i = 0; i < k; i++)
     {
-        n[i].id = i + 1;
-        cin >> n[i].num;
-        sum += n[i].num;
+        signs[i].id = i + 1;
+        cin >> signs[i].num;
+        sum += signs[i].num;
     }
 
-    if (k == 1)
+    sort(signs.begin(), signs.end());
+
+    for (size_t i = 0; i < sum;)
     {
-        sort(n, n + k, sym_t::cmp);
+        maxes = find_two_maxes(signs);
 
-        for(int i = 0; i < sum; i++)
-            cout << n[0].id << " ";
-        delete[] n;
+        cout << signs[maxes.first].id << " ";
+        signs[maxes.first].num--;
+        i++;
 
-        return 0;
+        if(signs[maxes.second].num > 0 && maxes.second != maxes.first)
+        {
+            cout << signs[maxes.second].id << " ";
+            signs[maxes.second].num--;
+            i++;
+        }
     }
-
-    if (k == 2)
-    {
-        sort(n, n + k, sym_t::cmp);
-
-        size_t last = 0;
-        for (int i = 0; i < sum; i++)
-            for (size_t j = 0; j < k; j++)
-            {
-                if(n[j].num > 0)
-                {
-                    cout << j + 1 << " ";
-                    n[j].num--;
-                }
-            }
-        delete[] n;
-
-        return 0;
-    }
-
-
-    size_t cur = 0;
-    for (int i = 0; i < sum; i++)
-    {
-        sort(n, n + k, sym_t::cmp);
-        if (n[0].id == last_id || n[0].num == n[1].num)
-            cur = 1;
-
-        if (n[0].id != last_id)
-            cur = 0;
-
-        cout << n[cur].id << " ";
-        last_id = n[cur].id;
-        n[cur].num--;
-
-
-    }
-    delete[] n;
     return 0;
 }
