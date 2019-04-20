@@ -53,15 +53,18 @@ public:
 
     static ostream& do_print(ostream& os, const Node& node)
     {
-        for (uint i = 0; i < node.child.size(); i++)
+        if (!node.child.empty())
         {
-            os << node.str;
+            for(uint8_t j = 0; j < node.level; j++)
+                os << ' ';
+            os << node.str << '\n';
             for(const auto &cur_child : node.child)
                 do_print(os, node.child.at(cur_child.first));
         }
-
-
         return os;
+    }
+
+
 //        if (node.child.empty())
 //        {
 //            for (uint8_t i = 0; i < node.level; i++)
@@ -79,7 +82,6 @@ public:
 //
 //        }
 //        return os;
-    }
 
     friend ostream& operator<<(ostream& os, const Node& node);
 
