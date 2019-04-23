@@ -8,6 +8,7 @@ struct segment{
     int num;
 };
 
+
 int main()
 {
     // TODO: move list to custom list to allow end->begin linking and erasing last node
@@ -16,7 +17,7 @@ int main()
     int * values;
     int size, step, dstep;
     list<segment> segments;
-    list<segment>::iterator cur_seg;
+    list<segment>::iterator cur_seg, last_seg;
     segment * temp;
 
     std::cin >> size >> step;
@@ -29,49 +30,58 @@ int main()
 
     for (int i = 0; i < dstep; i++)
         segments.push_back({&values[i * dstep], dstep});
-
 	segments.push_back({&values[dstep*dstep], size % dstep});
 
 	//cur_seg points to first segment which points to the first element in value array
 	cur_seg = segments.begin();
+    last_seg = segments.end();
+    last_seg--;
 
-    next(cur_seg, 1);
-//    cur_seg++;
+    cur_seg++;
 	for(int i = 0; i < size; i++)
     {
-	    next(cur_seg, dstep);
-	    cur_seg++;
         temp =  &cur_seg.operator*();
-	    cout << * temp -> current;
+	    cout << * temp -> current << " ";
 	    temp -> num--;
 	    temp -> current++;
-	    if (! temp -> num)
-	        if (cur_seg == segments.end())
-	            cur_seg
+
+	    // removing this segment if it is empty
+	    if (temp -> num == 0)
+        {
+	        // we only need to recalculate last when we removing something
+            last_seg = segments.end();
+            last_seg--;
+
+	        //if cur_seg is the last element, then move it to start and remove last
+            if(cur_seg == last_seg)
+            {
+                cur_seg = segments.begin();
+                segments.erase(last_seg);
+            }
+            // Unfortunately I'm to stupid and lazy to check how erase works so
+            // I'll just remove cur_seg by using last_seg (that's probably safe)
             else
-	            segments.erase(cur_seg);
+            {
+                last_seg = cur_seg;
+                cur_seg++;
+                segments.erase(last_seg);
+            }
+        }
+	    //otherwise moving current pointer and moving to the next segment
+	    else
+        {
+//	        cur_seg.operator*().current++;
 
+	        // if cur_seg is the last element, then just move to start. else just inc cur_seg
+            if(cur_seg == last_seg)
+                cur_seg = segments.begin();
 
+            cur_seg++;
+
+        }
 
     }
 
-//    for (int i = 0; i < 7; i++)
-//    {
-//        temp = &cur_seg.operator*();
-//        cur_seg++;
-//    }
-
-//    for (int i = size)
-//        cur_seg += dstep;
-//        cout << cur_seg->current ;
-//        cur_seg->num--;
-//        if (cur_seg->num == 0)
-//        {
-//            // if num == 0,
-//            // next or first
-//            if(cur_seg = val)
-//        }
-//        cur_seg->current++;
 
     return 0;
 
