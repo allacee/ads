@@ -6,14 +6,42 @@ using namespace std;
 struct segment{
     int * current;
     int num;
+    int deleted;
 };
 
 
+/// this function moving cur_seg iterator
+void next_seg(list<segment> & segments, int dstep, list<segment>::iterator & cur_seg, list<segment>::iterator & last_seg)
+{
+    bool all_counted = false;
+    auto started_from = cur_seg;
+
+
+    for (int counter = 1; counter > 0; counter--)
+    {
+
+        if(cur_seg == last_seg)
+            cur_seg = segments.begin();
+        else
+            cur_seg++;
+
+        if (!all_counted && cur_seg != started_from)
+        {
+            counter += cur_seg.operator*().deleted;
+//            if(cur_seg == last_seg)
+//                counter += last_num - cur_seg.operator*().num;
+//            else
+//                counter += dstep - cur_seg.operator*().num;
+        }
+        if (cur_seg == started_from)
+            all_counted = true;
+
+    }
+}
 
 
 int main()
 {
-    //TODO: write function to make seg_move, which is gonna check num of cur seg and repeat ++ until counter is zero
 
     int * values;
     int size, step, dstep;
@@ -29,9 +57,9 @@ int main()
     for (int i = 0; i < size; i++)
         values[i] = i + 1;
 
-    for (int i = 0; i < dstep; i++)
-        segments.push_back({&values[i * dstep], dstep});
-	segments.push_back({&values[dstep*dstep], size % dstep});
+    for (int i = 0; i < size / dstep; i++)
+        segments.push_back({&values[i * dstep], dstep, 0});
+	segments.push_back({&values[dstep*dstep], size % dstep, 0});
 
 	///cur_seg points to first segment which points to the first element in value array
 	cur_seg = segments.begin();
@@ -43,17 +71,14 @@ int main()
     {
         temp =  &cur_seg.operator*();
 	    cout << * temp -> current << " ";
-	    temp -> num--;
+//	    temp -> num--;
 	    temp -> current++;
+	    temp -> deleted++;
 
 	    /// removing this segment if it is empty
-	    if (temp -> num == 0)
+	    if (temp -> num == temp -> deleted)
         {
-	        /// we only need to recalculate last when we removing something
-            last_seg = segments.end();
-            last_seg--;
-
-	        /// if cur_seg is the last element, then move it to start and remove last
+            /// if cur_seg is the last element, then move it to start and remove last
             if(cur_seg == last_seg)
             {
                 cur_seg = segments.begin();
@@ -64,19 +89,25 @@ int main()
             else
             {
                 last_seg = cur_seg;
+//                next_seg(segments, dstep, cur_seg, last_seg);
                 cur_seg++;
                 segments.erase(last_seg);
             }
+
+            /// we only need to recalculate last when we removing something
+            last_seg = segments.end();
+            last_seg--;
         }
 	    ///otherwise moving current pointer and moving to the next segment
 	    else
         {
 
 	        /// if cur_seg is the last element, then just move to start. else just inc cur_seg
-            if(cur_seg == last_seg)
-                cur_seg = segments.begin();
-
-            cur_seg++;
+//            if(cur_seg == last_seg)
+//                cur_seg = segments.begin();
+//
+//            cur_seg++;
+            next_seg(segments, dstep, cur_seg, last_seg);
 
         }
 
