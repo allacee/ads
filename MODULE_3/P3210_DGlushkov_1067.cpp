@@ -40,34 +40,24 @@ public:
 
         for (uint8_t i = 0; i < paths.size(); i++)
         {
-            if (cur_node->child.count(paths[i]))
-                cur_node = &(cur_node->child.at(paths[i]));
-
-            else
-            {
+            if (!cur_node->child.count(paths[i]))
                 cur_node->child.insert(make_pair( paths[i], Node(paths[i], i,  map<string, Node>())));
-                cur_node = &(cur_node->child.at(paths[i]));
-            }
+
+            cur_node = &(cur_node->child.at(paths[i]));
+
         }
     }
 
 
     static ostream& do_print(ostream& os, const Node& node)
     {
-        if (node.child.empty())
-        {
-            for (uint8_t i = 0; i < node.level; i++)
-                os << ' ';
-            os << node.str << '\n';
-        }
-        else
-        {
-            for (uint8_t i = 0; i < node.level; i++)
-                os << ' ';
-            os << node.str << '\n';
+        for (uint8_t i = 0; i < node.level; i++)
+            os << ' ';
+        os << node.str << '\n';
+        if (!node.child.empty())
             for(const auto &cur_child : node.child)
                 do_print(os, node.child.at(cur_child.first));
-        }
+
         return os;
     }
 
