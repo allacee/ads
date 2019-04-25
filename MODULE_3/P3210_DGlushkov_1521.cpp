@@ -1,85 +1,64 @@
 /// this problem is pure evil, have fun
 #include <iostream>
-#include <vector>
 #include <cstdint>
 
 enum direction{
-    none = 0,
-    root = 1,
-    left = 2,
-    right = 3,
-    up = 4
+    NONE,
+    ROOT,
+    TOP,
+    LEFT,
+    RIGHT
 };
 
-template <class T, class Size>
+template <class T, class Index>
 class Tree
 {
     T * values;
-    Size last_level;
-    Size size;
-    Size pop_step;
-    Size current_node;
+    Index last_level;
+    Index size;
+    Index pop_step;
+    Index current_node;
 
-    void remove(Size cur_id)
+    void remove(Index cur_node)
     {
         do
-            values[cur_id]--;
-        while(to_father(cur_id));
+            values[cur_node]--;
+        while(to_father(cur_node));
     }
 
-    bool to_left_son(Size& cur_id)
+    bool to_left_son(Index& cur_node)
     {
-        if (2 * cur_id + 2 < size)
+        if (2 * cur_node + 2 < size)
         {
-            cur_id = 2 * cur_id + 1;
+            cur_node = 2 * cur_node + 1;
             return true;
         }
         else return false;
     }
 
-    bool to_right_son(Size& cur_id)
+    bool to_right_son(Index& cur_node)
     {
-        if (2 * cur_id + 2 < size)
+        if (2 * cur_node + 2 < size)
         {
-            cur_id = 2 * cur_id + 2;
+            cur_node = 2 * cur_node + 2;
             return true;
         }
         else return false;
     }
 
-    bool to_father(Size& cur_id)
+    bool to_father(Index& cur_node)
     {
-        if (cur_id != 0)
+        if (cur_node != 0)
         {
-            cur_id = (cur_id - 1) / 2;
+            cur_node = (cur_node - 1) / 2;
             return true;
         }
         else return false;
     }
-
-    bool to_brother(Size& cur_id)
-    {
-        if (cur_id != 0)
-        {
-            if(cur_id % 2)
-            {
-                to_father(cur_id);
-                to_right_son(cur_id);
-            }
-            else
-            {
-                to_father(cur_id);
-                to_left_son(cur_id);
-            }
-            return true;
-        }
-        else return false;
-    }
-
 
 public:
 
-    Tree (Size N, Size K)
+    Tree (Index N, Index K)
     {
         last_level = 1;
         while (last_level < N)
@@ -90,26 +69,26 @@ public:
         values = new T[size];
         current_node = 0;
 
-        for (Size i = 0; i < N; i++)
+        for (Index i = 0; i < N; i++)
             values[i + last_level - 1] = 1;
-        for (Size i = N; i < last_level; i++)
+        for (Index i = N; i < last_level; i++)
             values[i + last_level - 1] = 0;
 
-        for (int i = last_level - 2; i >= 0; i--)
+        for (Index temp, i = last_level - 2; i > 0; i--)
         {
-            Size temp_left = i, temp_right = i;
-
-            values[i] = (to_left_son(temp_left) ? values[temp_left] : 0) +
-                     (to_right_son(temp_right) ? values[temp_right] : 0);
+            values[i] = 0;
+            if (to_left_son(temp = i))
+                values[i] += values[temp];
+            if (to_right_son(temp = i))
+                values[i] += values[temp];
         }
-
-
 
     }
 
+    
     T pop()
     {
-        if (current_node == 0)
+        if (!current_node)
         {
             current_node = last_level - 2 + pop_step;
             return current_node - last_level + 2;
@@ -117,99 +96,104 @@ public:
 
         remove(current_node);
 
-        Size counter = pop_step ;
-        direction prev = right;
+        Index counter = pop_step;
+        direction dir = NONE;
+
+        Index father;
 
         while(counter > 0)
         {
-            Size temp_left = current_node, temp_right = current_node;
-            bool success_left = to_left_son(temp_left), success_right = to_right_son(temp_right);
+            Index temp_left = current_node, temp_right = current_node;
+            to_left_son(temp_left);
+            to_right_son(temp_right);
 
-            switch(prev)
+            switch(dir)
             {
-                case right:
+
+                case NONE:
                 {
-                    Size father = current_node;
+                    father = current_node;
                     to_father(father);
                     to_right_son(father);
-                    prev = father == current_node ? left : root;
+                    dir = father == current_node ? RIGHT : LEFT;
                     current_node = father;
                     break;
                 }
 
-                case none:
+                case ROOT:
+                {
+                    counter -= values[current_node];
+                    if (counter > 0)
+                    {
+                        dir = LEFT;
+                        to_father(current_node);
+                    }
+                    break;
+                }
+
+                case TOP:
                 {
                     if(current_node > last_level - 1)
                         counter--;
-                    else if(values[temp_left] < counter || !(temp_left <= (last_level - 1 + size) && temp_left > 0))
+                    else if(values[temp_left] < counter )
                     {
                         counter -= values[temp_left];
-                        prev = none;
+                        dir = TOP;
                         current_node = temp_right;
-                    } else
+                    }
+                    else
                     {
-                        prev = none;
+                        dir = TOP;
                         current_node = temp_left;
                     }
                     break;
                 }
 
-                case root:
+                case LEFT:
                 {
-                    if (values[temp_right] < counter || !(temp_right <= (last_level - 1 + size) && temp_right > 0))
+                    if (values[temp_right] < counter)
                     {
                         counter -= values[temp_right];
                         if (current_node == 0)
                         {
                             current_node = last_level - 1;
-                            prev = up;
+                            dir = ROOT;
                         }
                         else
                         {
 
-                            Size father = current_node;
-                            to_father(father);
+                            to_father(father = current_node);
                             to_right_son(father);
-                            prev = father == current_node ? left : root;
+                            dir = father == current_node ? RIGHT : LEFT;
                             to_father(current_node);
                         }
                     }
                     else
                     {
-                        prev = none;
+                        dir = TOP;
                         current_node = temp_right;
                     }
                     break;
                 }
-                case left:
+
+                case RIGHT:
                 {
                     if (current_node == 0)
                     {
                         current_node = last_level - 1 ;
-                        prev = up;
+                        dir = ROOT;
                     }
                     else
                     {
-                        Size father = current_node;
+                        father = current_node;
                         to_father(father);
                         to_right_son(father);
-                        prev = father == current_node ? left : root;
+                        dir = father == current_node ? RIGHT : LEFT;
                         to_father(current_node);
                     }
-
                     break;
                 }
-                case up:
-                {
-                    counter -= values[current_node];
-                    if (counter > 0)
-                    {
-                        prev = root;
-                        to_father(current_node);
-                    }
 
-                    break;
-                }
             }
 
         }
@@ -228,12 +212,12 @@ int main()
 
     if (k == 1)
     {
-        for (int i = 1; i <= n; i++)
+        for (uint32_t i = 1; i <= n; i++)
             cout << i << " ";
         return 0;
     }
 
-    Tree<int, int> tree = Tree<int, int>(n, k);
+    Tree<uint32_t, uint32_t> tree = Tree<uint32_t, uint32_t>(n, k);
 
     for (int i = 0; i < n; i++)
         cout << tree.pop() << " ";
