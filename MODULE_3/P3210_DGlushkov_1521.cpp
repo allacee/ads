@@ -1,119 +1,86 @@
 #include <iostream>
-#include <list>
+#include <vector>
+#include <cstdint>
 
-using namespace std;
-
-struct segment{
-    int * current;
-    int num;
-    int deleted;
-};
-
-
-/// this function moving cur_seg iterator
-void next_seg(list<segment> & segments, int dstep, list<segment>::iterator & cur_seg, list<segment>::iterator & last_seg)
+template <class T, class Size>
+class Tree
 {
-    bool all_counted = false;
-    auto started_from = cur_seg;
+    T * values;
+    Size last_level;
+    Size size;
 
+public:
+    Size cur_id;
 
-    for (int counter = 1; counter > 0; counter--)
+private:
+
+    void to_left_son()
     {
+        if (2 * cur_id + 2 < size)
+            cur_id = 2 * cur_id + 1;
+    }
 
-        if(cur_seg == last_seg)
-            cur_seg = segments.begin();
-        else
-            cur_seg++;
+    void to_right_son()
+    {
+        if (2 * cur_id + 2 < size)
+            cur_id = 2 * cur_id + 2;
+    }
 
-        if (!all_counted && cur_seg != started_from)
+    void to_father()
+    {
+        if (cur_id != 0)
+            cur_id = (cur_id - 1) / 2;
+    }
+
+    void to_brother()
+    {
+        if (cur_id != 0)
         {
-            counter += cur_seg.operator*().deleted;
-//            if(cur_seg == last_seg)
-//                counter += last_num - cur_seg.operator*().num;
-//            else
-//                counter += dstep - cur_seg.operator*().num;
+            if(cur_id % 2)
+            {
+                to_father();
+                to_right_son();
+            } else
+            {
+                to_father();
+                to_left_son();
+            }
         }
-        if (cur_seg == started_from)
-            all_counted = true;
+    }
+
+public:
+
+    Tree (Size N)
+    {
+        last_level = 1;
+        while (last_level < N)
+            last_level = last_level << 1u;
+
+        /// check if this -1 is needed
+        size = last_level << 1u - 1;
+        values = new T[size];
+        cur_id = 0;
+
+        //TODO: после заполнения дерева переставить указатель на самый левый элемент
 
     }
-}
 
+    // переместиться из текущей ячейки в ячейку += k
+    // при этом мы перемешаемся только по нижнему уровню
+
+
+
+
+
+
+};
+
+//using namespace std;
 
 int main()
 {
-
-    int * values;
-    int size, step, dstep;
-    list<segment> segments;
-    list<segment>::iterator cur_seg, last_seg;
-    segment * temp;
-
-    std::cin >> size >> step;
-
-	dstep = step - 1;
-    values = new int[size];
-
-    for (int i = 0; i < size; i++)
-        values[i] = i + 1;
-
-    for (int i = 0; i < size / dstep; i++)
-        segments.push_back({&values[i * dstep], dstep, 0});
-	segments.push_back({&values[dstep*dstep], size % dstep, 0});
-
-	///cur_seg points to first segment which points to the first element in value array
-	cur_seg = segments.begin();
-    last_seg = segments.end();
-    last_seg--;
-
-    cur_seg++;
-	for(int i = 0; i < size; i++)
-    {
-        temp =  &cur_seg.operator*();
-	    cout << * temp -> current << " ";
-//	    temp -> num--;
-	    temp -> current++;
-	    temp -> deleted++;
-
-	    /// removing this segment if it is empty
-	    if (temp -> num == temp -> deleted)
-        {
-            /// if cur_seg is the last element, then move it to start and remove last
-            if(cur_seg == last_seg)
-            {
-                cur_seg = segments.begin();
-                segments.erase(last_seg);
-            }
-            /// Unfortunately I'm to stupid and lazy to check how erase works so
-            /// I'll just remove cur_seg by using last_seg (that's probably safe)
-            else
-            {
-                last_seg = cur_seg;
-//                next_seg(segments, dstep, cur_seg, last_seg);
-                cur_seg++;
-                segments.erase(last_seg);
-            }
-
-            /// we only need to recalculate last when we removing something
-            last_seg = segments.end();
-            last_seg--;
-        }
-	    ///otherwise moving current pointer and moving to the next segment
-	    else
-        {
-
-	        /// if cur_seg is the last element, then just move to start. else just inc cur_seg
-//            if(cur_seg == last_seg)
-//                cur_seg = segments.begin();
-//
-//            cur_seg++;
-            next_seg(segments, dstep, cur_seg, last_seg);
-
-        }
-
-    }
+//    Tree<int, int> tree = Tree<int, int>(6);
 
 
     return 0;
-
 }
