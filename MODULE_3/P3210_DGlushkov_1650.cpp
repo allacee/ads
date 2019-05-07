@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <cstdint>
+#include <set>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ struct city
 };
 
 
-void increase_num_of_days(map<string, city> & world, uint16_t diff)
+/*void increase_num_of_days(map<string, city> & world, uint16_t diff)
 {
     auto richest_city = world.begin();
     auto rich_city = world.end();
@@ -43,6 +44,22 @@ void increase_num_of_days(map<string, city> & world, uint16_t diff)
     if (richest_city.operator*().second.sum != rich_city.operator*().second.sum)
         richest_city.operator*().second.num_of_days += diff;
 
+}*/
+
+void increase_num_of_days(map<string, city> & world, set<pair<money_t, city*>> & cream, uint16_t diff)
+{
+    auto richest_city = cream.end();
+    richest_city--;
+    if (world.size() > 1)
+    {
+        auto rich_city = cream.end();
+        rich_city--;
+        rich_city--;
+        if(richest_city.operator*().first != rich_city.operator*().first)
+            richest_city.operator*().second->num_of_days += diff;
+    }
+    else
+        richest_city.operator*().second->num_of_days += diff;
 }
 
 void print_cities(map<string, city> & world)
@@ -54,12 +71,11 @@ void print_cities(map<string, city> & world)
     }
 }
 
-
-
 int main()
 {
     map<string, city> world;
     map<string, human> humans;
+    set<pair<money_t, city*>> cream;
     uint16_t num_of_humans;
     string cur_name, cur_city;
     money_t cur_money;
@@ -73,24 +89,36 @@ int main()
         humans[cur_name].init(cur_money, cur_city);
     }
 
+    for (auto &it : world)
+        cream.insert({it.second.sum, &it.second});
+
+
     cin >> num_of_days >> num_of_moves;
     for (uint16_t i = 0; i < num_of_moves; i++)
     {
 
         prev_day = cur_day;
         cin >> cur_day >> cur_name >> cur_city;
-        increase_num_of_days(world, cur_day - prev_day);
+        increase_num_of_days(world, cream, cur_day - prev_day);
 
-        world[humans[cur_name].cur_city].sum -= humans[cur_name].money;
-        if  (world[humans[cur_name].cur_city].sum == 0 && world[humans[cur_name].cur_city].num_of_days == 0)
-            world.erase(humans[cur_name].cur_city);
+        string old_city = humans[cur_name].cur_city;
+
+        //changing city
+        cream.erase({world[old_city].sum, &world[old_city]});
+        world[old_city].sum -= humans[cur_name].money;
+        cream.insert({world[old_city].sum, &world[old_city]});
+
+        // updating new city
         humans[cur_name].cur_city = cur_city;
+        cream.erase({world[cur_city].sum, &world[cur_city]});
         world[cur_city].sum += humans[cur_name].money;
-
+        cream.insert({world[cur_city].sum, &world[cur_city]});
     }
-    increase_num_of_days(world, num_of_days - cur_day);
+// TODO: try to add this to cycle above
+        /*if  (world[temp_city].sum == 0 && world[temp_city].num_of_days == 0)
+            world.erase(temp_city);*/
 
-
+    increase_num_of_days(world, cream, num_of_days - cur_day);
     print_cities(world);
 
 
