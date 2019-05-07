@@ -1,15 +1,16 @@
-///well for some goddamn reasons this program is WA1 but it's correct lmao
+///well for some goddamn reasons this program is WA1 on timus but it is actually correct lmao
 #include <iostream>
 #include <cstdint>
 #include <map>
 #include <list>
 #include <vector>
 
+using namespace std;
 
 template <class T, class S>
 class Graph
 {
-private:
+public:
 
     S nof_nodes;
     std::multimap<T, std::pair<S, S>> mmap;
@@ -21,7 +22,7 @@ public:
 
     explicit Graph(S nof_nodes): nof_nodes(nof_nodes)
     {
-        in_mst = std::vector<bool>(nof_nodes, false);
+        in_mst = std::vector<bool>(nof_nodes + 1, false);
     }
 
     void insert(S from, S to, T weight)
@@ -53,7 +54,7 @@ public:
         std::cout << result << std::endl;
         std::cout << mst.size() << std::endl;
         for (auto it : mst)
-            std::cout << it.first + 1 << " " << it.second + 1 << std::endl;
+            std::cout << it.first << " " << it.second << std::endl;
     }
 
 };
@@ -72,7 +73,7 @@ int main()
     for (uint16_t i = 0; i < nof_edges; i++)
     {
         cin >> node_from >> node_to >> weight;
-        graph.insert(node_from - 1, node_to - 1, weight);
+        graph.insert(node_from , node_to , weight);
     }
 
     graph.kruskal();
