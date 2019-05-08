@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <stack>
 
 using namespace std;
 
@@ -10,13 +11,31 @@ class Graph
     map<S, map<S, T>> edges;
     S nof_nodes;
     vector<T> max_path;
+    stack<S> top_order;
+    bool * checked;
+
+    void topological_sort(S cur_node = 0)
+    {
+        for (auto it : edges[cur_node])
+            topological_sort(it.first);
+
+        if(!checked[cur_node])
+        {
+            checked[cur_node] = true;
+            top_order.push(cur_node);
+        }
+    }
 
 public:
     explicit Graph(S nof_nodes): nof_nodes(nof_nodes)
     {
         max_path = vector<T>(nof_nodes, 0);
+        checked = new bool[nof_nodes];
         for (S i = 0; i < nof_nodes; i++)
+        {
             edges[i] = map<S, T>();
+            checked[i] = false;
+        }
     }
 
     void insert_edge(S from, S to, T weight)
@@ -24,18 +43,22 @@ public:
         edges[from].insert({to, weight});
     }
 
-    void solve(S cur_node)
+    void solve(S root)
     {
-        for (auto it : edges[cur_node])
+        topological_sort(root);
+
+        S prev_node, cur_node;
+
+        while (!top_order.empty())
         {
-            S temp = max_path[cur_node] + it.second;
-            if (temp > max_path[it.first])
-            {
-                max_path[it.first] = temp;
-                solve(it.first);
-            }
+            prev_node = cur_node;
+            cur_node = top_order.top();
+            top_order.pop();
+
         }
     }
+
+
 
     void print_result(S destination)
     {
@@ -53,7 +76,7 @@ int main()
 {
     uint32_t nof_nodes, nof_edges, node_from, node_to, node_weight;
     cin >> nof_nodes >> nof_edges;
-    Graph<uint32_t , uint32_t > graph(nof_nodes);
+    Graph<uint32_t, uint32_t> graph(nof_nodes);
 
     for (uint32_t i = 0; i < nof_edges; i++)
     {
