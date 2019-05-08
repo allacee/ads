@@ -28,9 +28,12 @@ public:
     {
         for (auto it : edges[cur_node])
         {
-            if (max_path[cur_node] + it.second > max_path[it.first])
-                max_path[it.first] = max_path[cur_node] + it.second;
-            solve(it.first);
+            S temp = max_path[cur_node] + it.second;
+            if (temp > max_path[it.first])
+            {
+                max_path[it.first] = temp;
+                solve(it.first);
+            }
         }
     }
 
@@ -50,7 +53,7 @@ int main()
 {
     uint32_t nof_nodes, nof_edges, node_from, node_to, node_weight;
     cin >> nof_nodes >> nof_edges;
-    Graph<uint16_t , uint16_t > graph(nof_nodes);
+    Graph<uint32_t , uint32_t > graph(nof_nodes);
 
     for (uint32_t i = 0; i < nof_edges; i++)
     {
