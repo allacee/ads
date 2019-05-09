@@ -12,14 +12,12 @@ class Graph
     };
     vector<edge> edges;
     vector<T> max_path;
-    S nof_nodes, nof_edges, nof_checked;
+    S nof_nodes, nof_edges;
 
 public:
 
     explicit Graph(S nof_nodes, S nof_edges): nof_nodes(nof_nodes), nof_edges(nof_edges)
     {
-        nof_checked = 0;
-//        edges = vector<edge>(nof_edges);
         max_path = vector<T>(nof_nodes, -1);
     }
 
@@ -32,13 +30,11 @@ public:
     {
         max_path[start_node] = 0;
 
-        for (S i = 0; i < nof_checked; i++)
+        for (S i = 0; i < nof_nodes - 1; i++)
             for (S j = 0; j < nof_edges; j++)
                 if (max_path[edges[j].from] != -1 && max_path[edges[j].to] < max_path[edges[j].from] + edges[j].weight)
-                {
                     max_path[edges[j].to] = max_path[edges[j].from] + edges[j].weight;
-                    nof_checked ++;
-                }
+
         return max_path[end_node];
     }
 
