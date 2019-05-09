@@ -6,7 +6,8 @@ using namespace std;
 template<class T, class S>
 class Graph
 {
-    struct edge{
+    struct edge
+    {
         S from, to;
         T weight;
     };
@@ -31,9 +32,9 @@ public:
         max_path[start_node] = 0;
 
         for (S i = 0; i < nof_nodes - 1; i++)
-            for (S j = 0; j < nof_edges; j++)
-                if (max_path[edges[j].from] != -1 && max_path[edges[j].to] < max_path[edges[j].from] + edges[j].weight)
-                    max_path[edges[j].to] = max_path[edges[j].from] + edges[j].weight;
+            for (auto cur : edges)
+                if (max_path[cur.to] < max_path[cur.from] + cur.weight && max_path[cur.from] != -1)
+                    max_path[cur.to] = max_path[cur.from] + cur.weight;
 
         return max_path[end_node];
     }
@@ -44,11 +45,13 @@ public:
 
 int main()
 {
-    uint32_t nof_nodes, nof_edges, node_from, node_to, start, end;
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    uint32_t nof_nodes, nof_edges, node_from, node_to;
     int node_weight, result;
 
     cin >> nof_nodes >> nof_edges;
-
     Graph<int, uint32_t> graph = Graph<int, uint32_t>(nof_nodes, nof_edges);
 
     for (uint32_t i = 0; i < nof_edges; i++)
@@ -57,10 +60,8 @@ int main()
         graph.insert(node_from - 1, node_to - 1, node_weight);
     }
 
-    cin >> start >> end;
-
-
-    if ((result = graph.solve(start - 1, end - 1)) == -1)
+    cin >> node_from >> node_to;
+    if ((result = graph.solve(node_from - 1, node_to - 1)) == -1)
         cout << "No solution";
     else
         cout << result;
