@@ -1,4 +1,3 @@
-///well for some goddamn reasons this program is WA1 on timus but it is actually correct lmao
 #include <iostream>
 #include <cstdint>
 #include <map>
@@ -15,14 +14,17 @@ public:
     S nof_nodes;
     std::multimap<T, std::pair<S, S>> mmap;
     std::list<std::pair<S,S>> mst;
-    std::vector<bool> in_mst;
+    std::vector<S> mst_check;
     T result;
 
 public:
 
     explicit Graph(S nof_nodes): nof_nodes(nof_nodes)
     {
-        in_mst = std::vector<bool>(nof_nodes + 1, false);
+        mst_check = std::vector<S>(nof_nodes);
+        result = 0;
+        for (S i = 0; i < nof_nodes; i++)
+            mst_check[i] = i;
     }
 
     void insert(S from, S to, T weight)
@@ -33,17 +35,21 @@ public:
     void kruskal()
     {
         S cur_from, cur_to;
+        T cur_weight;
         for (S i = 0; i < nof_nodes; i++)
         {
             auto cur_node = mmap.begin();
             cur_from = cur_node.operator*().second.first;
             cur_to = cur_node.operator*().second.second;
-            if (!in_mst[cur_to])
+            if (mst_check[cur_from] != mst_check[cur_to])
             {
-                result = cur_node.operator*().first;
-                in_mst[cur_from] = true;
-                in_mst[cur_to] = true;
+                if (cur_node.operator*().first > result)
+                    result = cur_node.operator*().first;
                 mst.push_back({cur_from, cur_to});
+                S old_id = mst_check[cur_from], new_id = mst_check[cur_to];
+                for (S j = 0; j < nof_nodes; j++)
+                    if (mst_check[j] == old_id)
+                        mst_check[j] = new_id;
             }
             mmap.erase(cur_node);
         }
