@@ -12,43 +12,14 @@ using namespace std;
 class Graph
 {
     vector<int16_t> price;
-    unordered_map<int64_t, pair<int16_t, unordered_map<int64_t, int16_t>>> edges;
-    vector<int64_t> id_to_num;
+    unordered_map<string, pair<int16_t, unordered_map<string, int16_t>>> edges;
+    vector<string> id_to_num;
     vector<int32_t> length;
     stack<int16_t> path;
     vector<int16_t> parents;
 
     int32_t n, iter;
 
-    static pair<int16_t, int16_t> compare_nums(int64_t num1, int64_t num2, bool & conn)
-    {
-        int16_t first_diff = -1, num_of_diff = 0;
-        pair<int16_t, int16_t> first = {-1, -1}, second = {-1, -1};
-        for(int16_t i = 9; num1 > 0 || num2 > 0; num1/=10, num2/=10, i--)
-        {
-            if (num1 % 10 != num2 % 10)
-            {
-                if (num_of_diff == 2)
-                {
-                    return {first_diff, num_of_diff};
-                }
-
-                num_of_diff++;
-                first_diff = i;
-                first.first = num1 % 10;
-                second.first = num2 % 10;
-                if (first.second == -1)
-                {
-                    first.second = num1 % 10;
-                    second.second = num2 % 10;
-                }
-            }
-        }
-
-        if (num_of_diff == 1 || (num_of_diff == 2 && first.first == second.second && first.second == second.first))
-            conn = true;
-        return {first_diff, num_of_diff};
-    }
 
 public:
 
@@ -56,7 +27,7 @@ public:
     {
         length = vector<int32_t>(n, INF);
         parents = vector<int16_t>(n);
-        id_to_num = vector<int64_t>(n);
+        id_to_num = vector<string>(n);
         iter = 0;
     }
 
@@ -65,7 +36,7 @@ public:
         price.push_back(val);
     }
 
-    void insert_num(int64_t val)
+    void insert_num(string & val)
     {
         bool conn = false;
 
@@ -73,16 +44,38 @@ public:
         id_to_num[iter++] = val;
 
         for(auto & it: edges)
-        {
-            auto diff = compare_nums(val, it.first, conn);
-            if (conn)
+            //it.first <- следующий узел
+            for (int16_t i = 0, first_diff = 0, counter = 0; i < 10; i++)
             {
-                it.second.second.insert({val, price[diff.first]});
-                edges[val].second.insert({it.first, price[diff.first]});
-                conn = false;
+                if (val[i] != it.first[i])
+                {
+                    if (counter == 0)
+                    {
+                        string temp = val;
+                        temp[i] = it.first[i];
+                        first_diff = i;
+                        if (temp == it.first)
+                        {
+                            it.second.second.insert({val, price[first_diff]});
+                            edges[val].second.insert({it.first, price[first_diff]});
+                            break;
+                        }
+                        else
+                            counter++;
+                    }
+                    else if (counter == 1)
+                    {
+                        string temp = val;
+                        swap(temp[first_diff], temp[i]);
+                        if (temp == it.first)
+                        {
+                            it.second.second.insert({val, price[first_diff]});
+                            edges[val].second.insert({it.first, price[first_diff]});
+                        }
+                        break;
+                    }
+                }
             }
-        }
-
     }
 
     void solve()
@@ -101,7 +94,7 @@ public:
                 break;
             checked[v] = true;
 
-            for (auto it : edges[id_to_num[v]].second)
+            for (const auto& it : edges[id_to_num[v]].second)
             {
                 int16_t to = edges[it.first].first, len = it.second;
                 if (length[v] + len < length[to])
@@ -148,7 +141,7 @@ int main()
 
     int32_t n;
     int16_t price;
-    int64_t num;
+    string num;
 
     cin >> n;
     Graph graph = Graph(n);
