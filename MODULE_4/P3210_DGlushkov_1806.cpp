@@ -5,42 +5,19 @@
 #include <algorithm>
 #include <deque>
 #include <queue>
-#include <cmath>
 
-#define INF 64000u
+const uint16_t INF = 50010u;
 
 using namespace std;
 
 class Graph
 {
     vector<uint16_t> price;
-    unordered_map<int64_t, pair<uint16_t, unordered_map<int64_t, uint16_t>>> edges;
-    vector<int64_t> id_to_num;
+    unordered_map<string, pair<uint16_t, unordered_map<uint16_t , uint16_t>>> edges;
+    vector<string> id_to_num;
     vector<uint16_t> length;
-    deque<uint16_t> path;
     vector<uint16_t> parents;
     uint16_t n, iter;
-
-    inline int64_t swap_digits(int64_t num, int16_t src, int16_t dst)
-    {
-        int64_t res = num;
-        auto pow1 = (int64_t)(pow(10, 9 - src)), pos2 = (int64_t)(pow(10, 9 - dst));
-        int16_t dig1 = (num / pow1) % 10, dig2 = (num / pos2) % 10;
-        res -= pow1 * dig1;
-        res -= pos2 * dig2;
-        res += pos2 * dig1;
-        res += pow1 * dig2;
-        return res;
-    }
-
-    inline int64_t change_digit(int64_t num, int16_t pos, int16_t new_val)
-    {
-        int64_t res = num;
-        auto pow1 = (int64_t)(pow(10, 9 - pos));
-        int16_t dig1 = (num / pow1) % 10;
-        res -= (dig1 - new_val) * pow1;
-        return res;
-    }
 
 
 public:
@@ -49,7 +26,7 @@ public:
     {
         length = vector<uint16_t>(n + 5, INF);
         parents = vector<uint16_t>(n + 5);
-        id_to_num = vector<int64_t>(n + 5);
+        id_to_num = vector<string>(n + 5);
         iter = 0;
     }
 
@@ -58,35 +35,44 @@ public:
         price.push_back(val);
     }
 
-    void insert_num(int64_t & val_num)
+    void insert_num(string & val_str)
     {
+        uint16_t counter = 0;
 
-        edges[val_num].first = edges.size();
-        id_to_num[iter++] = val_num;
+        edges[val_str].first = edges.size();
+        id_to_num[iter++] = val_str;
 
         for (int16_t i = 0; i < 10; i++)
         {
-            for(int16_t j = i + 1; j < 10; j++)
+            for(char e = 48; e < 58; e++)
             {
-                int64_t temp = swap_digits(val_num, i, j);
-
-                if(edges.find(temp) != edges.end() && temp != val_num)
+                if(val_str[i] != e)
                 {
-                    edges[val_num].second.insert({temp, price[i]});
-                    edges[temp].second.insert({val_num, price[i]});
+                    string temp = val_str;
+                    temp[i] = e;
+                    if(edges.find(temp) != edges.end())
+                    {
+                        edges[val_str].second.insert({edges[temp].first, price[i]});
+                        edges[temp].second.insert({edges[val_str].first, price[i]});
+                        counter++;
+                        if (edges.size() == counter)
+                            break;
+                    }
                 }
             }
 
-            for(int16_t ch = 0; ch < 9; ch++)
+            for(int16_t j = i + 1; j < 10; j++)
             {
-
-                int64_t temp = change_digit(val_num, i, ch);
-                if(edges.find(temp) != edges.end() && temp != val_num)
+                string temp = val_str;
+                swap(temp[i], temp[j]);
+                if(edges.find(temp) != edges.end() && temp != val_str)
                 {
-                    edges[val_num].second.insert({temp, price[i]});
-                    edges[temp].second.insert({val_num, price[i]});
+                    edges[val_str].second.insert({edges[temp].first, price[i]});
+                    edges[temp].second.insert({edges[val_str].first, price[i]});
+                    counter++;
+                    if (edges.size() == counter)
+                        break;
                 }
-
             }
 
         }
@@ -96,7 +82,6 @@ public:
     void solve()
     {
         priority_queue <pair<uint16_t, uint16_t>> que;
-
         length[0] = 0;
         que.push({0, 0});
         while(!que.empty())
@@ -106,7 +91,7 @@ public:
 
             for (auto it : edges[id_to_num[v]].second)
             {
-                uint16_t to = edges[it.first].first, len = it.second;
+                uint16_t to = edges[id_to_num[it.first]].first, len = it.second;
                 if (length[v] + len < length[to])
                 {
                     length[to] = length[v] + len;
@@ -117,10 +102,9 @@ public:
         }
     }
 
-
-
     void print_result(uint16_t end)
     {
+        deque<uint16_t> path;
 
         if (length[end] == INF)
         {
@@ -145,9 +129,9 @@ int main()
     cin.tie(nullptr);
     cout.tie(nullptr);
 
-    uint16_t n;
+    uint16_t n = 0;
     uint16_t price;
-    int64_t num;
+    string num;
 
     cin >> n;
     Graph graph = Graph(n);
