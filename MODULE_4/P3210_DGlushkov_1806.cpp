@@ -13,8 +13,9 @@ using namespace std;
 class Graph
 {
     vector<uint16_t> price;
-    unordered_map<string, pair<uint16_t, unordered_map<uint16_t , uint16_t>>> edges;
+    unordered_map<string, uint16_t> num_to_id;
     vector<string> id_to_num;
+    vector< vector< pair<uint16_t , uint16_t> > > edges;
     vector<uint16_t> length;
     vector<uint16_t> parents;
     uint16_t n, iter;
@@ -27,6 +28,8 @@ public:
         length = vector<uint16_t>(n + 5, INF);
         parents = vector<uint16_t>(n + 5);
         id_to_num = vector<string>(n + 5);
+        edges = vector< vector < pair<uint16_t, uint16_t > > >(n + 5);
+
         iter = 0;
     }
 
@@ -37,9 +40,7 @@ public:
 
     void insert_num(string & val_str)
     {
-        uint16_t counter = 0;
-
-        edges[val_str].first = edges.size();
+        num_to_id[val_str] = iter;
         id_to_num[iter++] = val_str;
 
         for (int16_t i = 0; i < 10; i++)
@@ -50,13 +51,11 @@ public:
                 {
                     string temp = val_str;
                     temp[i] = e;
-                    if(edges.find(temp) != edges.end())
+                    if(num_to_id.find(temp) != num_to_id.end())
                     {
-                        edges[val_str].second.insert({edges[temp].first, price[i]});
-                        edges[temp].second.insert({edges[val_str].first, price[i]});
-                        counter++;
-                        if (edges.size() == counter)
-                            break;
+                        uint16_t id1 = num_to_id[val_str], id2 = num_to_id[temp];
+                        edges[id1].emplace_back(id2, price[i]);
+                        edges[id2].emplace_back(id1, price[i]);
                     }
                 }
             }
@@ -65,13 +64,11 @@ public:
             {
                 string temp = val_str;
                 swap(temp[i], temp[j]);
-                if(edges.find(temp) != edges.end() && temp != val_str)
+                if(num_to_id.find(temp) != num_to_id.end())
                 {
-                    edges[val_str].second.insert({edges[temp].first, price[i]});
-                    edges[temp].second.insert({edges[val_str].first, price[i]});
-                    counter++;
-                    if (edges.size() == counter)
-                        break;
+                    uint16_t id1 = num_to_id[val_str], id2 = num_to_id[temp];
+                    edges[id1].emplace_back(id2, price[i]);
+                    edges[id2].emplace_back(id1, price[i]);
                 }
             }
 
@@ -89,9 +86,9 @@ public:
             uint16_t v = que.top().second;
             que.pop();
 
-            for (auto it : edges[id_to_num[v]].second)
+            for (auto it : edges[v])
             {
-                uint16_t to = edges[id_to_num[it.first]].first, len = it.second;
+                uint16_t to = it.first, len = it.second;
                 if (length[v] + len < length[to])
                 {
                     length[to] = length[v] + len;
